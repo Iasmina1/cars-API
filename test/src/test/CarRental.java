@@ -43,6 +43,9 @@ public class CarRental extends HttpServlet {
 		gson = new Gson();
 	}
 	
+	/*
+	* Types of cars with number of seats. 
+	*/
 	private void addSomeCars() {
 		carsCapacity.put("STANDARD",4);
 		carsCapacity.put("EXECUTIVE",4);
@@ -52,6 +55,9 @@ public class CarRental extends HttpServlet {
 		carsCapacity.put("MINIBUS",13);
 	}
 	
+	/*
+	* Latitude and Longitude for pickup and dropoff. 
+	*/
 	private static class Coordinates {
 		double lat;
 		double longi;
@@ -61,6 +67,9 @@ public class CarRental extends HttpServlet {
 		}
 	}
 	
+	/*
+	*  Sort list of cars available by cheapest. 
+	*/
 	private static Map<String, Double> sortByPrice(Map<String, Double> mycars) { 
 	     
 	        List<Map.Entry<String, Double> > list = 
@@ -81,6 +90,9 @@ public class CarRental extends HttpServlet {
 	        return mycarsCopy; 
 	} 
 	
+	/*
+	*  Print final results. 
+	*/
 	private void prettyPrint(Map<String,Double> mycars) {
 		if(mycars.isEmpty()) {
 			System.out.println("Oops. There are no cars available. Try Again Later.");
@@ -90,6 +102,9 @@ public class CarRental extends HttpServlet {
 	        } 
 	}
 	
+	/*
+	*  Read the message returned by the car providers. 
+	*/
 	private Map<String, Double> unwrap(String content, int passengers) {
 	
 		Map<String,Double> mycars = new HashMap<String,Double>();
@@ -119,6 +134,9 @@ public class CarRental extends HttpServlet {
 		return mycars;
 	}
 	
+	/*
+	*  Request cars available from providers' API. 
+	*/
 	private Map<String, Double> getCars(String owner, Coordinates pickup, Coordinates dropoff, int passengers) {
 		URL url;
 		Map<String,Double> results = new HashMap<String,Double>();
@@ -163,9 +181,11 @@ public class CarRental extends HttpServlet {
 		} 
 		
 		return results;
-		
 	}
 	
+	/*
+	*  Compare different options from all providers and return only the cheapest cars available. 
+	*/
 	private Map<String,Double> bestProvider(Map<String,Double> a, Map<String,Double> b) {
 		
 		Map<String,Double> result = new HashMap<String,Double>();
@@ -182,18 +202,21 @@ public class CarRental extends HttpServlet {
 		return result;
 	}
 	
+	/*
+	* Get and send to print the cheapest cars available from all 3 providers. 
+	*/
 	private void start(Coordinates pickup, Coordinates dropoff, int passengers) {
 		
 
-			finalRes =	sortByPrice( bestProvider( bestProvider( getCars("dave", pickup, dropoff, passengers) ,
-														getCars("eric", pickup, dropoff, passengers) ) ,
-														getCars("jeff", pickup, dropoff, passengers) )
-							);
+			finalRes = sortByPrice( bestProvider( bestProvider( getCars("dave", pickup, dropoff, passengers) ,
+									    getCars("eric", pickup, dropoff, passengers) ) ,
+									    getCars("jeff", pickup, dropoff, passengers) )
+						);
 			prettyPrint(finalRes); 
 		
 	}
 	
-	// Part 2. 
+	// Part 2. Return results as JSON objects 
 	@Override
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
 	         
@@ -206,6 +229,9 @@ public class CarRental extends HttpServlet {
         out.flush();   
 	}
 	
+	/*
+	*  Main method.
+	*/
 	public static void main(String[] args) {
 		CarRental r = new CarRental();
 		double lat, longi; 
