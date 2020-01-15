@@ -23,14 +23,14 @@ Dave's cars:
 
 Dave has:  
 
-//Initial results
+//Initial results  
 PEOPLE_CARRIER - 246632.0  
 EXECUTIVE - 691348.0  
 LUXURY - 377879.0  
 LUXURY_PEOPLE_CARRIER - 471228.0  
 STANDARD - 299853.0  
 
-// After sorting
+// After sorting  
 PEOPLE_CARRIER - 246632.0  
 STANDARD - 299853.0  
 LUXURY - 377879.0  
