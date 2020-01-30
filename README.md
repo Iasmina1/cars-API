@@ -32,7 +32,7 @@ Node.js
 Express framework 
 
 Dependencies:
-cars-api.jar  (java console application from Part 1). 
+cars-api.jar  (java console application from Part 1 exported as a Runnable jar). 
 
 Start server using command line:  
 node server.js 
