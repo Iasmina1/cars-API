@@ -1,6 +1,6 @@
 # cars-API
 
-Part 1: Console Application  
+**Part 1: Console Application** 
 
 Java 12  
 IDE: Eclipse Oxygen  
@@ -9,13 +9,13 @@ Dependencies:
 java-json.jar  
 
 command line:   
-javac -cp path\java-json.jar CarRental.java Car.java 
+javac -cp path\java-json.jar CarRental.java Car.java   
 java CarRental provider pickup_lat pickup_long dropoff_lat dropoff_long no_passengers  
 
 Example command line: 
-java CarRental All 3.410632 -2.157533 3.410632 -2.157533 4
-java CarRental Dave 3.410632 -2.157533 3.410632 -2.157533 2  
-etc.  
+java CarRental All 3.410632 -2.157533 3.410632 -2.157533 4  
+java CarRental Dave 3.410632 -2.157533 3.410632 -2.157533 2    
+etc.    
 
 Types of providers possible: All, Dave, Jeff or Eric   
 
@@ -26,7 +26,7 @@ MINIBUS - Jeff - 445357.0
 EXECUTIVE - Jeff - 507783.0  
 LUXURY - Jeff - 665694.0  
 
-Part 2: API  
+**Part 2: API**  
 
 Node.js 
 Express framework 
