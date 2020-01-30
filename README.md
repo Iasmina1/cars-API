@@ -12,7 +12,7 @@ command line:
 javac -cp path\java-json.jar CarRental.java Car.java   
 java CarRental provider pickup_lat pickup_long dropoff_lat dropoff_long no_passengers  
 
-Example command line: 
+Example command line:   
 java CarRental All 3.410632 -2.157533 3.410632 -2.157533 4  
 java CarRental Dave 3.410632 -2.157533 3.410632 -2.157533 2    
 etc.    
