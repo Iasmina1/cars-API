@@ -8,6 +8,7 @@ import java.io.Reader;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -31,11 +32,11 @@ public class CarRental {
 	private static final long serialVersionUID = 1L;
 	private Map<String,Integer> carsCapacity;
 	private Object gson;
-	private Map<String, Double> finalRes;
+	private ArrayList<Car> finalRes;
 	
 	public CarRental() {
 		carsCapacity = new HashMap<String,Integer>();
-		finalRes = new HashMap<String,Double>();
+		finalRes = new ArrayList<Car>();
 		addSomeCars();
 		gson = new Gson();
 	}
@@ -58,39 +59,28 @@ public class CarRental {
 		}
 	}
 	
-	private static Map<String, Double> sortByPrice(Map<String, Double> mycars) { 
-	     
-	        List<Map.Entry<String, Double> > list = 
-	               new LinkedList<Map.Entry<String, Double> >(mycars.entrySet()); 
-	
-	        Collections.sort(list, new Comparator<Map.Entry<String, Double> >() { 
-	            public int compare(Map.Entry<String, Double> o1,  
-	                               Map.Entry<String, Double> o2) 
-	            { 
-	                return (o1.getValue()).compareTo(o2.getValue()); 
-	            } 
-	        }); 
-
-	        Map<String, Double> mycarsCopy = new LinkedHashMap<String, Double>(); 
-	        for (Map.Entry<String, Double> record : list) { 
-	            mycarsCopy.put(record.getKey(), record.getValue()); 
-	        } 
-	        return mycarsCopy; 
+	private ArrayList<Car> sortByPrice(ArrayList<Car> mycars) { 
+	        Collections.sort(mycars);
+	        
+	        return mycars;
 	} 
 	
-	private static void prettyPrint(Map<String,Double> mycars) {
-		System.out.println();
-		if(mycars.isEmpty()) {
-			System.out.println("Oh No! There are no cars available for this provider! Try Again Later.\n");
+	private static void prettyPrint(ArrayList<Car> cars) {
+
+		if(cars.isEmpty()) {
+			//System.out.println("Oh No! There are no cars available for this provider! Try Again Later.\n");
 		}
-		 for (Map.Entry<String, Double> e : mycars.entrySet()) { 
-	            System.out.println(e.getKey() + " - " + e.getValue()); 
-	        } 
+		
+		for(Car car : cars) {
+			String name = car.getProvider().substring(0,1).toUpperCase() + car.getProvider().substring(1).toLowerCase();
+			System.out.println(car.getType() + " - " + name + " - " + car.getPrice()); 
+		}
 	}
 	
-	private Map<String, Double> unwrap(String content, int passengers) {
+	private ArrayList<Car> unwrap(String provider, String content, int passengers) {
 	
-		Map<String,Double> mycars = new HashMap<String,Double>();
+		//Map<String,Double> mycars = new HashMap<String,Double>();
+		ArrayList<Car> mycars = new ArrayList<Car>();
 		
 		JSONObject obj;
 		try {
@@ -105,7 +95,9 @@ public class CarRental {
 		    	 // Part 1. Return relevant information to the client, taking into account the number of passengers.
 		    	 int noSeats = carsCapacity.get(car_type);
 		 		 if(passengers <= noSeats) {
-		 			mycars.put(car_type,price);
+		 			//mycars.put(car_type,price);
+		 			 Car car = new Car(provider, car_type, price);
+		 			 mycars.add(car);
 		 		}
 		      }
 		      
@@ -117,10 +109,10 @@ public class CarRental {
 		return mycars;
 	}
 	
-	private Map<String, Double> getCars(String owner, Coordinates pickup, Coordinates dropoff, int passengers, int timeout) {
+	private ArrayList<Car> getCars(String owner, Coordinates pickup, Coordinates dropoff, int passengers, int timeout) {
 		URL url;
-		Map<String,Double> results = new HashMap<String,Double>();
-		String name = owner.substring(0,1).toUpperCase() + owner.substring(1).toLowerCase();
+		ArrayList<Car> results = new ArrayList<Car>();
+	
 		try {
 			
 			url = new URL("https://techtest.rideways.com/" + owner + 
@@ -151,15 +143,14 @@ public class CarRental {
 			
 			con.disconnect();
 
-			results = unwrap(content.toString(), passengers);
+			results = unwrap(owner, content.toString(), passengers);
 			
-			System.out.println("\n" + name + " has:");
-			prettyPrint(results);
+			//prettyPrint(results, owner);
 
 		} catch (MalformedURLException e) {
 			//e.printStackTrace();
 		} catch (java.net.SocketTimeoutException e) {
-				System.out.println("\n" + name + " was too slow to respond.");
+				//System.out.println("\n" + name + " was too slow to respond.");
 		} catch (IOException e) {
 			//e.printStackTrace();
 		} 
@@ -168,68 +159,81 @@ public class CarRental {
 		
 	}
 	
-	private Map<String,Double> bestProvider(Map<String,Double> a, Map<String,Double> b){
-		Map<String,Double> result = new HashMap<String,Double>();
+	private ArrayList<Car> bestProvider(List<Car> allCars){
+
+		HashMap<String, Car> mp = new HashMap<String, Car>();
 		
-		// Get all cars in (A \ B) or ( A n B )
-		for (Map.Entry<String, Double> e : a.entrySet()) { 
-		
-			// If both providers have the same car available, choose the one that is cheaper.
-            if(b.get(e.getKey())!= null && b.get(e.getKey()) < e.getValue()) {
-            	result.put(e.getKey(), b.get(e.getKey()));
-            }
-            else {
-            	result.put(e.getKey(), e.getValue());
-            }
-		} 
-		
-		// Get all cars in (B \ A) 
-		for (Map.Entry<String, Double> e : b.entrySet()) { 
-			if(result.get(e.getKey()) == null) {
-				result.put(e.getKey(), e.getValue());
+		for(Car car : allCars){
+			
+			if(mp.get(car.getType())!=null && mp.get(car.getType()).getPrice() > car.getPrice() ||
+				(mp.get(car.getType())==null)) {
+			
+					mp.put(car.getType(), car); 		
 			}
+	
 		}
-		return result;
+		
+		return new ArrayList<Car>(mp.values());
 	}
 
-	private Map<String, Double> start(Coordinates pickup, Coordinates dropoff, int passengers) {
+	private ArrayList<Car> start(Coordinates pickup, Coordinates dropoff, int passengers) {
 		
 			int time = 2000; 
-			finalRes =	sortByPrice( bestProvider( bestProvider( getCars("dave", pickup, dropoff, passengers, time) ,
-														getCars("eric", pickup, dropoff, passengers, time) ) ,
-														getCars("jeff", pickup, dropoff, passengers, time) )
-							);
+			
+			List<Car> dave = getCars("dave", pickup, dropoff, passengers, time);
+			List<Car> eric = getCars("eric", pickup, dropoff, passengers, time);
+			List<Car> jeff = getCars("jeff", pickup, dropoff, passengers, time); 
+			
+			dave.addAll(eric);
+			dave.addAll(jeff);
+			
+			finalRes =	sortByPrice( bestProvider( dave ) );
+			
 			return finalRes;
 		
 	}
 	
-	private void dave(Coordinates pickup, Coordinates dropoff, int passengers) {
+	private void individual(String provider, Coordinates pickup, Coordinates dropoff, int passengers) {
 
-		prettyPrint( sortByPrice( getCars("dave", pickup, dropoff, passengers, 100000) ));
+		prettyPrint( sortByPrice( getCars(provider, pickup, dropoff, passengers, 100000) ));
 	}	
+	
 
 	public static void main(String[] args) {
 		CarRental r = new CarRental();
 		double lat, longi; 
 		int passengers;
+		String provider;
 		
-		if(args.length == 5) { 
-			lat = Double.parseDouble(args[0]);
-			longi = Double.parseDouble(args[1]);
+		if(args.length == 6) { 
+			int n = 0; 
+			provider = args[n]; 
+			lat = Double.parseDouble(args[n+1]);
+			longi = Double.parseDouble(args[n+2]);
 			Coordinates pickup = new Coordinates(lat, longi);
 			
-			lat = Double.parseDouble(args[2]);
-			longi = Double.parseDouble(args[3]);
+			lat = Double.parseDouble(args[n+3]);
+			longi = Double.parseDouble(args[n+4]);
 			Coordinates dropoff = new Coordinates(lat, longi);
 			
-			passengers = Integer.parseInt(args[4]); 
+			passengers = Integer.parseInt(args[n+5]); 
 			
-			System.out.println("Part 1.1 \nDave's cars:");
-			r.dave(pickup, dropoff, passengers);
+			if(provider.equalsIgnoreCase("Dave")) {
+				
+				r.individual("dave", pickup, dropoff, passengers);
 			
-			System.out.println("\n\nPart 1.2 \nAll providers:"); 
-			System.out.println("\nFinal results:");
-			prettyPrint(r.start(pickup, dropoff, passengers));
+			} else if (provider.equalsIgnoreCase("Jeff")) {
+				
+				r.individual("jeff", pickup, dropoff, passengers);
+				
+			} else if (provider.equalsIgnoreCase("Eric")) {
+				
+				r.individual("eric", pickup, dropoff, passengers);
+				
+			} else if(provider.equalsIgnoreCase("All")) {
+				
+				prettyPrint(r.start(pickup, dropoff, passengers));
+			}
 			
 		} else {
 			System.out.println("Incorrect Arguments!"); 
