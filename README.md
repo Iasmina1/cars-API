@@ -1,63 +1,44 @@
 # cars-API
 
+Part 1: Console Application  
+
 Java 12  
 IDE: Eclipse Oxygen  
 
 Dependencies:  
 java-json.jar  
-  
-command line:   
-javac -cp path\java-json.jar CarRental.java  
-java CarRental pickup_lat pickup_long dropoff_lat dropoff_long no_passengers  
 
-Example of args in Eclipse:
-3.410632 -2.157533 3.410632 -2.157533 4
+command line:   
+javac -cp path\java-json.jar CarRental.java Car.java 
+java CarRental provider pickup_lat pickup_long dropoff_lat dropoff_long no_passengers  
 
 Example command line: 
-java CarRental 3.410632 -2.157533 3.410632 -2.157533 4
+java CarRental All 3.410632 -2.157533 3.410632 -2.157533 4
+java CarRental Dave 3.410632 -2.157533 3.410632 -2.157533 2  
+etc.  
+
+Types of providers possible: All, Dave, Jeff or Eric   
 
 Example output:   
   
-Part 1.1   
-Dave's cars:  
+STANDARD - Jeff - 77697.0  
+MINIBUS - Jeff - 445357.0  
+EXECUTIVE - Jeff - 507783.0  
+LUXURY - Jeff - 665694.0  
 
-Dave has:  
+Part 2: API  
 
-//Initial results  
-PEOPLE_CARRIER - 246632.0  
-EXECUTIVE - 691348.0  
-LUXURY - 377879.0  
-LUXURY_PEOPLE_CARRIER - 471228.0  
-STANDARD - 299853.0  
+Node.js 
+Express framework 
 
-// After sorting  
-PEOPLE_CARRIER - 246632.0  
-STANDARD - 299853.0  
-LUXURY - 377879.0  
-LUXURY_PEOPLE_CARRIER - 471228.0  
-EXECUTIVE - 691348.0  
-  
-  
-Part 1.2   
-All providers:   
+Dependencies:
+cars-api.jar  (java console application from Part 1). 
 
-Dave has:  
+Start server using command line:  
+node server.js 
 
-PEOPLE_CARRIER - 980267.0  
-LUXURY - 966578.0  
-STANDARD - 986907.0  
-  
-Eric was too slow to respond.  
-  
-Jeff has:  
-  
-PEOPLE_CARRIER - 958267.0  
-LUXURY_PEOPLE_CARRIER - 349950.0  
-
-Final results:   
-  
-LUXURY_PEOPLE_CARRIER - 349950.0  
-PEOPLE_CARRIER - 958267.0  
-LUXURY - 966578.0  
-STANDARD - 986907.0  
+Send request in browser: 
+http://localhost:4000/api/cars/provider/pickup_latitude&pickup_longitude/dropoff_latitude&dropoff_longitude/no_passengers  
+Example:  
+http://localhost:4000/api/cars/All/51.470020&-0.454295/51.470020&-0.454295/5
   
